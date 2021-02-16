@@ -2,6 +2,7 @@ package com.example.contactstestproject.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +28,13 @@ public class ContactsListAdapter extends
     public ContactsListAdapter(Context context, List<Contact> contacts) {
         mContext = context;
         mContacts = contacts;
+        Log.d("testt","1 "+contacts.size());
     }
 
     public void updateAdapter(List<Contact> contacts) {
         mContacts = contacts;
         notifyDataSetChanged();
+        Log.d("testt","2 "+contacts.size());
     }
 
     @NonNull

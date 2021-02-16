@@ -3,6 +3,7 @@ package com.example.contactstestproject.data.repository;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -23,6 +24,7 @@ public class ContactsRepository implements IContactsRepository {
     private static ContactsRepository sRepository;
     private final SQLiteDatabase mDatabase;
     private ContactSyncUtils mContactSyncUtils;
+    MutableLiveData<List<Contact>> mContactsLiveData = new MutableLiveData<>();
 
     public static ContactsRepository getInstance() {
         if (sRepository == null)
@@ -38,7 +40,11 @@ public class ContactsRepository implements IContactsRepository {
 
     @Override
     public LiveData<List<Contact>> getContactsLiveData() {
-        MutableLiveData<List<Contact>> contactsLiveData = new MutableLiveData<>();
+        Log.d("testt", "getContactsLiveData: ");
+        return mContactsLiveData;
+    }
+
+    public void fetchContactsLiveData() {
         List<Contact> contacts = new ArrayList<>();
         ContactsCursorWrapper cursor = queryContacts(null, null);
         try {
@@ -50,8 +56,8 @@ public class ContactsRepository implements IContactsRepository {
         } finally {
             cursor.close();
         }
-        contactsLiveData.postValue(contacts);
-        return contactsLiveData;
+        Log.d("testt", "repository liveData : "+contacts.size());
+        mContactsLiveData.postValue(contacts);
     }
 
     @Override
@@ -70,6 +76,8 @@ public class ContactsRepository implements IContactsRepository {
                     mDatabase.insert(ContactsDbSchema.ContactsTable.NAME,
                             null,
                             getContactsContentValue(mContactSyncUtils.getContacts().get(i)));
+                Log.d("testt", "repository : "+mContactSyncUtils.getContacts().size());
+                fetchContactsLiveData();
             }
         });
     }

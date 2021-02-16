@@ -2,6 +2,7 @@ package com.example.contactstestproject.utils.contacts;
 
 import android.database.ContentObserver;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import com.example.contactstestproject.data.repository.ContactsRepository;
 import com.example.contactstestproject.utils.ApplicationUtils;
@@ -16,6 +17,7 @@ public class ContactsObserver {
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             mRepository.insertContacts();
+            Log.d("testt", "contentObserver");
         }
     };
 

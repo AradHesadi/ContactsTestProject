@@ -1,0 +1,182 @@
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>apply plugin: 'com.android.application'\r\n\r\nandroid {\r\n    compileSdkVersion 30\r\n    buildToolsVersion \"30.0.2\"\r\n\r\n    defaultConfig {\r\n        applicationId \"com.example.contactstestproject\"\r\n        minSdkVersion 21\r\n        targetSdkVersion 30\r\n        versionCode 1\r\n        versionName \"1.0\"\r\n\r\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            minifyEnabled false\r\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\r\n        }\r\n    }\r\n\r\n    buildFeatures {\r\n        dataBinding true\r\n    }\r\n}\r\n\r\ndependencies {\r\n    implementation fileTree(dir: \"libs\", include: [\"*.jar\"])\r\n    implementation 'androidx.appcompat:appcompat:1.2.0'\r\n    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'\r\n    implementation 'androidx.room:room-runtime:2.2.6'\r\n    implementation 'androidx.legacy:legacy-support-v4:1.0.0'\r\n    implementation 'androidx.recyclerview:recyclerview:1.1.0'\r\n    annotationProcessor 'androidx.room:room-compiler:2.2.6'\r\n    testImplementation 'junit:junit:4.13'\r\n    androidTestImplementation 'androidx.test.ext:junit:1.1.2'\r\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(revision bb4e91a4b5ff753c8f2b42bea4cf2c08def322ff)
++++ app/build.gradle	(date 1613386095252)
+@@ -2,7 +2,7 @@
+ 
+ android {
+     compileSdkVersion 30
+-    buildToolsVersion "30.0.2"
++    buildToolsVersion "30.0.3"
+ 
+     defaultConfig {
+         applicationId "com.example.contactstestproject"
+@@ -33,8 +33,10 @@
+     implementation 'androidx.room:room-runtime:2.2.6'
+     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+     implementation 'androidx.recyclerview:recyclerview:1.1.0'
++    implementation "com.microsoft.appcenter:appcenter-analytics:4.1.0"
++    implementation "com.microsoft.appcenter:appcenter-crashes:4.1.0"
+     annotationProcessor 'androidx.room:room-compiler:2.2.6'
+-    testImplementation 'junit:junit:4.13'
++    testImplementation 'junit:junit:4.13.1'
+     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+ 
+Index: app/src/main/java/com/example/contactstestproject/ui/activity/ContactsListActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.contactstestproject.ui.activity;\r\n\r\nimport android.os.Bundle;\r\n\r\nimport androidx.fragment.app.Fragment;\r\n\r\nimport com.example.contactstestproject.ui.fragment.ContactsListFragment;\r\nimport com.example.contactstestproject.utils.ContactPermissionUtils;\r\n\r\npublic class ContactsListActivity extends SingleFragmentActivity {\r\n\r\n    @Override\r\n    public Fragment createFragment() {\r\n        return ContactsListFragment.newInstance();\r\n    }\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        ContactPermissionUtils.requestPermission(this);\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/contactstestproject/ui/activity/ContactsListActivity.java	(revision bb4e91a4b5ff753c8f2b42bea4cf2c08def322ff)
++++ app/src/main/java/com/example/contactstestproject/ui/activity/ContactsListActivity.java	(date 1613386979863)
+@@ -6,6 +6,9 @@
+ 
+ import com.example.contactstestproject.ui.fragment.ContactsListFragment;
+ import com.example.contactstestproject.utils.ContactPermissionUtils;
++import com.microsoft.appcenter.AppCenter;
++import com.microsoft.appcenter.analytics.Analytics;
++import com.microsoft.appcenter.crashes.Crashes;
+ 
+ public class ContactsListActivity extends SingleFragmentActivity {
+ 
+@@ -18,6 +21,9 @@
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         ContactPermissionUtils.requestPermission(this);
++        AppCenter.start(getApplication(), "20b55e59-360b-47b7-b153-95887833cc77",
++                Analytics.class, Crashes.class);
++        Crashes.generateTestCrash();
+     }
+ }
+ 
+Index: app/src/main/java/com/example/contactstestproject/ui/activity/SingleFragmentActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.contactstestproject.ui.activity;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.fragment.app.FragmentManager;\r\nimport android.os.Bundle;\r\n\r\nimport com.example.contactstestproject.R;\r\n\r\npublic abstract class SingleFragmentActivity extends AppCompatActivity {\r\n\r\n    public abstract Fragment createFragment();\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_single_fragment);\r\n\r\n        FragmentManager fragmentManager = getSupportFragmentManager();\r\n\r\n        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_holder);\r\n        if (fragment == null) {\r\n            fragmentManager\r\n                    .beginTransaction()\r\n                    .add(R.id.fragment_holder, createFragment())\r\n                    .commit();\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/contactstestproject/ui/activity/SingleFragmentActivity.java	(revision bb4e91a4b5ff753c8f2b42bea4cf2c08def322ff)
++++ app/src/main/java/com/example/contactstestproject/ui/activity/SingleFragmentActivity.java	(date 1613386409993)
+@@ -16,14 +16,14 @@
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_single_fragment);
+ 
+-        FragmentManager fragmentManager = getSupportFragmentManager();
+-
+-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_holder);
+-        if (fragment == null) {
+-            fragmentManager
+-                    .beginTransaction()
+-                    .add(R.id.fragment_holder, createFragment())
+-                    .commit();
+-        }
++//        FragmentManager fragmentManager = getSupportFragmentManager();
++//
++//        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_holder);
++//        if (fragment == null) {
++//            fragmentManager
++//                    .beginTransaction()
++//                    .add(R.id.fragment_holder, createFragment())
++//                    .commit();
++//        }
+     }
+ }
+\ No newline at end of file
+Index: gradle/wrapper/gradle-wrapper.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#Wed Jan 20 04:19:24 IRST 2021\r\ndistributionBase=GRADLE_USER_HOME\r\ndistributionPath=wrapper/dists\r\nzipStoreBase=GRADLE_USER_HOME\r\nzipStorePath=wrapper/dists\r\ndistributionUrl=https\\://services.gradle.org/distributions/gradle-6.5-bin.zip\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1256
+===================================================================
+--- gradle/wrapper/gradle-wrapper.properties	(revision bb4e91a4b5ff753c8f2b42bea4cf2c08def322ff)
++++ gradle/wrapper/gradle-wrapper.properties	(date 1613385984080)
+@@ -1,6 +1,6 @@
+-#Wed Jan 20 04:19:24 IRST 2021
++#Mon Feb 15 14:16:24 IRST 2021
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-6.5-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-6.5-all.zip
+Index: build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// Top-level build file where you can add configuration options common to all sub-projects/modules.\r\nbuildscript {\r\n    repositories {\r\n        google()\r\n        jcenter()\r\n    }\r\n    dependencies {\r\n        classpath 'com.android.tools.build:gradle:4.1.1'\r\n\r\n        // NOTE: Do not place your application dependencies here; they belong\r\n        // in the individual module build.gradle files\r\n    }\r\n}\r\n\r\nallprojects {\r\n    repositories {\r\n        google()\r\n        jcenter()\r\n    }\r\n}\r\n\r\ntask clean(type: Delete) {\r\n    delete rootProject.buildDir\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- build.gradle	(revision bb4e91a4b5ff753c8f2b42bea4cf2c08def322ff)
++++ build.gradle	(date 1613386042483)
+@@ -5,7 +5,7 @@
+         jcenter()
+     }
+     dependencies {
+-        classpath 'com.android.tools.build:gradle:4.1.1'
++        classpath 'com.android.tools.build:gradle:4.1.2'
+ 
+         // NOTE: Do not place your application dependencies here; they belong
+         // in the individual module build.gradle files
+Index: app/src/main/java/com/example/contactstestproject/ui/components/ContactDetailView.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/contactstestproject/ui/components/ContactDetailView.java	(date 1613302645434)
++++ app/src/main/java/com/example/contactstestproject/ui/components/ContactDetailView.java	(date 1613302645434)
+@@ -0,0 +1,45 @@
++package com.example.contactstestproject.ui.components;
++
++import android.content.Context;
++import android.graphics.Color;
++import android.os.Build;
++import android.util.AttributeSet;
++import android.view.Gravity;
++import android.widget.FrameLayout;
++import android.widget.ImageView;
++import android.widget.TextView;
++
++import androidx.annotation.Nullable;
++import androidx.annotation.RequiresApi;
++
++import com.example.contactstestproject.R;
++
++public class ContactDetailView extends FrameLayout {
++
++
++    private TextView nameTextView;
++    private TextView phoneTextView;
++    private ImageView contactImageView;
++
++
++
++    @RequiresApi(api = Build.VERSION_CODES.M)
++    public ContactDetailView(Context context, @Nullable AttributeSet attrs) {
++        super(context, attrs);
++        contactImageView = new ImageView(context);
++        contactImageView.setImageResource(R.drawable.ic_contact_foreground);
++        nameTextView = new TextView(context);
++        nameTextView.setText("fff");
++        nameTextView.setTextColor(Color.RED);
++        nameTextView.setTextSize(40);
++        phoneTextView = new TextView(context);
++        phoneTextView.setText("eeeee");
++        phoneTextView.setTextSize(40);
++        phoneTextView.setGravity(Gravity.END | Gravity.TOP);
++
++
++        addView(nameTextView);
++        addView(phoneTextView);
++        addView(contactImageView , 160);
++    }
++}
