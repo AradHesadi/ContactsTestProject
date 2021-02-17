@@ -1,14 +1,14 @@
 package com.example.contactstestproject.ui.activity;
 
+import android.os.Bundle;
+import android.widget.FrameLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import android.os.Bundle;
 
 import com.example.contactstestproject.R;
-import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
+import com.example.contactstestproject.ui.comp.FragmentHolder;
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
@@ -17,9 +17,10 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_single_fragment);
+        FrameLayout fragmentHolder = new FragmentHolder(this);
+        setContentView(fragmentHolder);
 
-       FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_holder);
         if (fragment == null) {

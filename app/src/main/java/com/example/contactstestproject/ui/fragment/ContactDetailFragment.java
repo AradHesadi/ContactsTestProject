@@ -1,14 +1,6 @@
 package com.example.contactstestproject.ui.fragment;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,9 +8,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.contactstestproject.R;
-import com.example.contactstestproject.databinding.FragmentContactDetailBinding;
 import com.example.contactstestproject.model.Contact;
+import com.example.contactstestproject.ui.comp.ContactDetailView;
 import com.example.contactstestproject.viewmodel.ContactDetailViewModel;
 
 import java.io.Serializable;
@@ -28,7 +26,7 @@ import java.util.Objects;
 public class ContactDetailFragment extends Fragment {
 
     private ContactDetailViewModel mContactDetailViewModel;
-    private FragmentContactDetailBinding mFragmentContactViewBinding;
+    private ContactDetailView mContactDetailView;
     private Contact mContact;
     public static final String ARGS_CONTACT = "ARGS_CONTACT";
 
@@ -46,13 +44,8 @@ public class ContactDetailFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        mFragmentContactViewBinding = DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_contact_detail,
-                container,
-                false);
-        return mFragmentContactViewBinding.getRoot();
+        mContactDetailView = new ContactDetailView(getContext());
+        return mContactDetailView;
     }
 
     @Override
@@ -85,13 +78,12 @@ public class ContactDetailFragment extends Fragment {
 
     private void initData(Contact contact) {
         if (contact != null) {
-            mFragmentContactViewBinding.name.setText(contact.getName());
-            mFragmentContactViewBinding.number
-                    .setText(String.format(getString(R.string.number_contact_detail),
-                            contact.getPhoneNumber()));
+            mContactDetailView.setNameTextView(contact.getName());
+            mContactDetailView.setPhoneTextView(String.format(getString(R.string.number_contact_detail),
+                    contact.getPhoneNumber()));
         } else {
-            mFragmentContactViewBinding.name.setText(R.string.no_contact);
-            mFragmentContactViewBinding.number.setText("");
+            mContactDetailView.setNameTextView(getString(R.string.no_contact));
+            mContactDetailView.setPhoneTextView("");
         }
     }
 

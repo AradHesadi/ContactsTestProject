@@ -25,7 +25,6 @@ public class ContactsListActivity extends SingleFragmentActivity {
 
         AppCenter.start(getApplication(), "20b55e59-360b-47b7-b153-95887833cc77",
                 Analytics.class, Crashes.class);
-        Crashes.generateTestCrash();
     }
 }
 
