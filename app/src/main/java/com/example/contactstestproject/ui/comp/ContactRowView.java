@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.example.contactstestproject.R;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class ContactRowView extends FrameLayout {
@@ -21,11 +23,8 @@ public class ContactRowView extends FrameLayout {
 
     public ContactRowView(@NonNull Context context) {
         super(context);
-        ViewGroup.LayoutParams layoutParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-        this.setLayoutParams(layoutParams);
         initViews(context);
         initPaints();
-        addView(nameTextView);
         setWillNotDraw(false);
     }
 
@@ -34,7 +33,7 @@ public class ContactRowView extends FrameLayout {
         super.onDraw(canvas);
         int height = getMeasuredHeight();
         int width = getMeasuredWidth();
-        canvas.drawRoundRect(0, 0, width, height, 300f, 50f, backgroundPaint);
+        canvas.drawRoundRect(20, 16, width-20, height-10, 80f, 50f, backgroundPaint);
     }
 
     public void setNameTextView(CharSequence text) {
@@ -42,10 +41,15 @@ public class ContactRowView extends FrameLayout {
     }
 
     private void initViews(@NonNull Context context) {
+        ViewGroup.LayoutParams baseLayoutParams = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        this.setLayoutParams(baseLayoutParams);
         nameTextView = new TextView(context);
         nameTextView.setText(R.string.name);
-        nameTextView.setTextSize(18);
+        nameTextView.setTextSize(26);
         nameTextView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
+        FrameLayout.LayoutParams nameLayoutParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.CENTER);
+        nameLayoutParams.setMargins(0,32,0,32);
+        addView(nameTextView,nameLayoutParams);
     }
 
     private void initPaints(){

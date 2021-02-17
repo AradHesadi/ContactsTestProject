@@ -1,6 +1,7 @@
 package com.example.contactstestproject.ui.comp;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -18,6 +19,7 @@ public class ContactsListView extends FrameLayout {
         mRecyclerView = new RecyclerView(context);
         ViewGroup.LayoutParams layoutParams = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
         this.setLayoutParams(layoutParams);
+        this.setBackgroundColor(Color.parseColor("#9be7ff"));
         addView(mRecyclerView, layoutParams);
     }
 
