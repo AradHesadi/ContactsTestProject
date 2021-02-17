@@ -1,0 +1,61 @@
+Index: app/src/main/java/com/example/contactstestproject/data/repository/ContactsRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.contactstestproject.data.repository;\r\n\r\nimport android.content.ContentValues;\r\nimport android.database.Cursor;\r\nimport android.database.sqlite.SQLiteDatabase;\r\n\r\nimport androidx.lifecycle.LiveData;\r\nimport androidx.lifecycle.MutableLiveData;\r\n\r\nimport com.example.contactstestproject.data.database.cursorwrapper.ContactsCursorWrapper;\r\nimport com.example.contactstestproject.data.database.ContactsDbHelper;\r\nimport com.example.contactstestproject.data.database.ContactsDbSchema;\r\nimport com.example.contactstestproject.model.Contact;\r\nimport com.example.contactstestproject.utils.ApplicationUtils;\r\nimport com.example.contactstestproject.utils.ThreadUtils;\r\nimport com.example.contactstestproject.utils.contacts.ContactSyncUtils;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class ContactsRepository implements IContactsRepository {\r\n\r\n    private static ContactsRepository sRepository;\r\n    private final SQLiteDatabase mDatabase;\r\n    private ContactSyncUtils mContactSyncUtils;\r\n\r\n    public static ContactsRepository getInstance() {\r\n        if (sRepository == null)\r\n            sRepository = new ContactsRepository();\r\n        return sRepository;\r\n    }\r\n\r\n    private ContactsRepository() {\r\n        ContactsDbHelper contactsDbHelper = new ContactsDbHelper(ApplicationUtils.getContext());\r\n        mDatabase = contactsDbHelper.getWritableDatabase();\r\n        mContactSyncUtils = new ContactSyncUtils(ApplicationUtils.getContext());\r\n    }\r\n\r\n    @Override\r\n    public LiveData<List<Contact>> getContactsLiveData() {\r\n        MutableLiveData<List<Contact>> contactsLiveData = new MutableLiveData<>();\r\n        List<Contact> contacts = new ArrayList<>();\r\n        ContactsCursorWrapper cursor = queryContacts(null, null);\r\n        try {\r\n            cursor.moveToFirst();\r\n            while (!cursor.isAfterLast()) {\r\n                contacts.add(cursor.getContact());\r\n                cursor.moveToNext();\r\n            }\r\n        } finally {\r\n            cursor.close();\r\n        }\r\n        contactsLiveData.postValue(contacts);\r\n        return contactsLiveData;\r\n    }\r\n\r\n    @Override\r\n    public void clear() {\r\n        mDatabase.delete(ContactsDbSchema.ContactsTable.NAME, null, null);\r\n    }\r\n\r\n    @Override\r\n    public void insertContacts() {\r\n        ThreadUtils.dataBaseWriteExecutor.execute(new Runnable() {\r\n            @Override\r\n            public void run() {\r\n                clear();\r\n                mContactSyncUtils.sync();\r\n                for (int i = 0; i < mContactSyncUtils.getContacts().size(); i++)\r\n                    mDatabase.insert(ContactsDbSchema.ContactsTable.NAME,\r\n                            null,\r\n                            getContactsContentValue(mContactSyncUtils.getContacts().get(i)));\r\n            }\r\n        });\r\n    }\r\n\r\n    private ContactsCursorWrapper queryContacts(String selection, String[] selectionArgs) {\r\n        Cursor cursor = mDatabase.query(ContactsDbSchema.ContactsTable.NAME,\r\n                null,\r\n                selection,\r\n                selectionArgs,\r\n                null,\r\n                null,\r\n                null);\r\n\r\n        return new ContactsCursorWrapper(cursor);\r\n    }\r\n\r\n    private ContentValues getContactsContentValue(Contact contact) {\r\n        ContentValues values = new ContentValues();\r\n        values.put(ContactsDbSchema.ContactsTable.COLS.ID, contact.getId());\r\n        values.put(ContactsDbSchema.ContactsTable.COLS.NAME, contact.getName());\r\n        values.put(ContactsDbSchema.ContactsTable.COLS.PHONE_NUMBER, contact.getPhoneNumber());\r\n        return values;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/contactstestproject/data/repository/ContactsRepository.java	(revision 3f6934c757a62333380ab02dbd5d3027207618ff)
++++ app/src/main/java/com/example/contactstestproject/data/repository/ContactsRepository.java	(date 1613469101271)
+@@ -3,6 +3,7 @@
+ import android.content.ContentValues;
+ import android.database.Cursor;
+ import android.database.sqlite.SQLiteDatabase;
++import android.provider.ContactsContract;
+ 
+ import androidx.lifecycle.LiveData;
+ import androidx.lifecycle.MutableLiveData;
+@@ -40,7 +41,29 @@
+     public LiveData<List<Contact>> getContactsLiveData() {
+         MutableLiveData<List<Contact>> contactsLiveData = new MutableLiveData<>();
+         List<Contact> contacts = new ArrayList<>();
+-        ContactsCursorWrapper cursor = queryContacts(null, null);
++        Cursor cursor = mDatabase.rawQuery("select * from " +
++                        ContactsDbSchema.ContactsTable.NAME,
++                null);
++        if (cursor.moveToFirst()) {
++            String id = cursor.getString(
++                    cursor.getColumnIndex(ContactsDbSchema.ContactsTable.COLS.ID));
++            String name = cursor.getString(cursor.getColumnIndex(
++                    ContactsDbSchema.ContactsTable.COLS.NAME));
++            String phoneNo = cursor.getString(cursor.getColumnIndex(
++                    ContactsDbSchema.ContactsTable.COLS.PHONE_NUMBER));
++            contacts.add(new Contact(id,name,phoneNo));
++            while (cursor.moveToNext()) {
++                id = cursor.getString(
++                        cursor.getColumnIndex(ContactsDbSchema.ContactsTable.COLS.ID));
++                 name = cursor.getString(cursor.getColumnIndex(
++                        ContactsDbSchema.ContactsTable.COLS.NAME));
++                phoneNo = cursor.getString(cursor.getColumnIndex(
++                        ContactsDbSchema.ContactsTable.COLS.PHONE_NUMBER));
++                contacts.add(new Contact(id,name,phoneNo));
++            }
++        }
++        cursor.close();
++        /*ContactsCursorWrapper cursor = queryContacts(null, null);
+         try {
+             cursor.moveToFirst();
+             while (!cursor.isAfterLast()) {
+@@ -49,10 +72,10 @@
+             }
+         } finally {
+             cursor.close();
+-        }
++        }*/
+         contactsLiveData.postValue(contacts);
+         return contactsLiveData;
+-    }
++}
+ 
+     @Override
+     public void clear() {
