@@ -30,8 +30,6 @@ import com.example.contactstestproject.viewmodel.ContactsListViewModel;
 
 import java.util.List;
 
-import static com.example.contactstestproject.utils.ApplicationUtils.getContext;
-
 public class ContactsActivity extends AppCompatActivity {
 
     private static final int MENU_ITEM_BACK = 1;
@@ -64,7 +62,7 @@ public class ContactsActivity extends AppCompatActivity {
                     setAdapter(contacts);
             }
         });
-        contactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(getContext()));
+        contactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
@@ -94,7 +92,7 @@ public class ContactsActivity extends AppCompatActivity {
 
     private void setAdapter(List<Contact> contacts) {
         if (contactsListAdapter == null) {
-            contactsListAdapter = new ContactsListAdapter(getContext(), contacts);
+            contactsListAdapter = new ContactsListAdapter(this, contacts);
             contactsListView.getRecyclerView().setAdapter(contactsListAdapter);
         } else {
             contactsListAdapter.updateAdapter(contacts);

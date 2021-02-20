@@ -1,10 +1,10 @@
-package com.example.contactstestproject.utils.contacts;
+package com.example.contactstestproject.utils;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 
+import com.example.contactstestproject.MyApp;
 import com.example.contactstestproject.model.Contact;
 
 import java.util.ArrayList;
@@ -15,20 +15,12 @@ this class contains logic for getting contacts from content resolver
 and creates an array list to insert in database
  */
 
-public class ContactSyncUtils {
+public class WriteContactsUtils {
 
-    private final Context context;
-    private final List<Contact> contacts;
-
-    public ContactSyncUtils(Context context) {
-        this.context = context;
-        contacts = new ArrayList<>();
-    }
-
-    public void sync() {
-        contacts.clear();
+    public static List<Contact> writeToDatabase() {
+        List<Contact> contacts = new ArrayList<>();
         if (ContactPermissionUtils.isGranted()) {
-            ContentResolver contentResolver = context.getContentResolver();
+            ContentResolver contentResolver = MyApp.getContext().getContentResolver();
             Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                     null, null, null, ContactsContract.Contacts.DISPLAY_NAME);
 
@@ -61,9 +53,6 @@ public class ContactSyncUtils {
         } else {
             System.exit(0);
         }
-    }
-
-    public List<Contact> getContacts() {
         return contacts;
     }
 }

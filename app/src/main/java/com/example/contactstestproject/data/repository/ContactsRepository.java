@@ -8,13 +8,13 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.contactstestproject.MyApp;
 import com.example.contactstestproject.data.database.cursorwrapper.ContactsCursorWrapper;
 import com.example.contactstestproject.data.database.ContactsDbHelper;
 import com.example.contactstestproject.data.database.ContactsDbSchema;
 import com.example.contactstestproject.model.Contact;
-import com.example.contactstestproject.utils.ApplicationUtils;
 import com.example.contactstestproject.utils.ThreadUtils;
-import com.example.contactstestproject.utils.contacts.ContactSyncUtils;
+import com.example.contactstestproject.utils.WriteContactsUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,6 @@ public class ContactsRepository{
 
     private static ContactsRepository repository;
     private final SQLiteDatabase database;
-    private final ContactSyncUtils contactSyncUtils;
     MutableLiveData<List<Contact>> listMutableLiveData = new MutableLiveData<>();
 
     public static ContactsRepository getInstance() {
@@ -33,9 +32,8 @@ public class ContactsRepository{
     }
 
     private ContactsRepository() {
-        ContactsDbHelper contactsDbHelper = new ContactsDbHelper(ApplicationUtils.getContext());
+        ContactsDbHelper contactsDbHelper = new ContactsDbHelper(MyApp.getContext());
         database = contactsDbHelper.getWritableDatabase();
-        contactSyncUtils = new ContactSyncUtils(ApplicationUtils.getContext());
     }
 
     public LiveData<List<Contact>> getContactsLiveData() {
@@ -65,12 +63,11 @@ public class ContactsRepository{
             @Override
             public void run() {
                 clear();
-                contactSyncUtils.sync();
-                int size = contactSyncUtils.getContacts().size();
+                int size = WriteContactsUtils.writeToDatabase().size();
                 for (int i = 0; i < size; i++)
                     database.insert(ContactsDbSchema.ContactsTable.NAME,
                             null,
-                            getContactsContentValue(contactSyncUtils.getContacts().get(i)));
+                            getContactsContentValue(WriteContactsUtils.writeToDatabase().get(i)));
                 Log.d("testt", "repository : "+ size);
                 fetchContactsLiveData();
             }

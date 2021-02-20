@@ -1,20 +1,33 @@
 package com.example.contactstestproject;
 
 import android.app.Application;
+import android.content.Context;
+import android.database.ContentObserver;
+import android.provider.ContactsContract;
 
-import com.example.contactstestproject.utils.ApplicationUtils;
-import com.example.contactstestproject.utils.contacts.ContactsObserver;
+import com.example.contactstestproject.data.repository.ContactsRepository;
 
 public class MyApp extends Application {
 
-    ContactsObserver contactsObserver;
+    private static Context context;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        ApplicationUtils.setContext(getApplicationContext());
-        contactsObserver = new ContactsObserver();
-        contactsObserver.setData();
+        context = getApplicationContext();
+        MyApp.getContext().getContentResolver().registerContentObserver(
+                ContactsContract.Contacts.CONTENT_URI,
+                true,
+                new ContentObserver(null) {
+                    @Override
+                    public void onChange(boolean selfChange) {
+                        super.onChange(selfChange);
+                        ContactsRepository.getInstance().insertContacts();
+                    }
+                });
+    }
 
+    public static Context getContext() {
+        return context;
     }
 }
