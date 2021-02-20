@@ -13,7 +13,7 @@ public class ContactsCursorWrapper extends CursorWrapper {
     }
 
     public Contact getContact() {
-        String id = getString(getColumnIndex(ContactsDbSchema.ContactsTable.COLS.ID));
+        int id = getInt(getColumnIndex(ContactsDbSchema.ContactsTable.COLS.ID));
         String name = getString(getColumnIndex(ContactsDbSchema.ContactsTable.COLS.NAME));
         String phoneNumber = getString(getColumnIndex(ContactsDbSchema.ContactsTable.COLS.PHONE_NUMBER));
         return new Contact(id, name, phoneNumber);

@@ -7,14 +7,14 @@ import com.example.contactstestproject.utils.contacts.ContactsObserver;
 
 public class MyApp extends Application {
 
-    ContactsObserver mContactsObserver;
+    ContactsObserver contactsObserver;
 
     @Override
     public void onCreate() {
         super.onCreate();
         ApplicationUtils.setContext(getApplicationContext());
-        mContactsObserver = new ContactsObserver();
-        mContactsObserver.setData();
+        contactsObserver = new ContactsObserver();
+        contactsObserver.setData();
 
     }
 }

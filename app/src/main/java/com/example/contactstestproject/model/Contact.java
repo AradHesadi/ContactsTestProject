@@ -1,41 +1,39 @@
 package com.example.contactstestproject.model;
 
-import androidx.annotation.NonNull;
-
 import java.io.Serializable;
 
 
 public class Contact implements Serializable {
 
-    private final String mId;
+    private final int id;
 
-    private String mName;
+    private String name;
 
-    private String mPhoneNumber;
+    private String phoneNumber;
 
-    public String getId() {
-        return mId;
+    public int getId() {
+        return id;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public void setName(String mName) {
-        this.mName = mName;
+        this.name = mName;
     }
 
     public String getPhoneNumber() {
-        return mPhoneNumber;
+        return phoneNumber;
     }
 
     public void setPhoneNumber(String mPhoneNumber) {
-        this.mPhoneNumber = mPhoneNumber;
+        this.phoneNumber = mPhoneNumber;
     }
 
-    public Contact(@NonNull String id, String mName, String mPhoneNumber) {
-        this.mId = id;
-        this.mName = mName;
-        this.mPhoneNumber = mPhoneNumber;
+    public Contact(int id, String name, String mPhoneNumber) {
+        this.id = id;
+        this.name = name;
+        this.phoneNumber = mPhoneNumber;
     }
 }

@@ -7,13 +7,13 @@ in order to call context less in different classes of app
  */
 
 public class ApplicationUtils {
-    private static Context sContext;
+    private static Context context;
 
     public static Context getContext() {
-        return sContext;
+        return context;
     }
 
     public static void setContext(Context Context) {
-        sContext = Context;
+        context = Context;
     }
 }

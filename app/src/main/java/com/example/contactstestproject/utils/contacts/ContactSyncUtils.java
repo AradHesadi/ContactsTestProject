@@ -17,24 +17,24 @@ and creates an array list to insert in database
 
 public class ContactSyncUtils {
 
-    private final Context mContext;
-    private final List<Contact> mContacts;
+    private final Context context;
+    private final List<Contact> contacts;
 
     public ContactSyncUtils(Context context) {
-        mContext = context;
-        mContacts = new ArrayList<>();
+        this.context = context;
+        contacts = new ArrayList<>();
     }
 
     public void sync() {
-        mContacts.clear();
+        contacts.clear();
         if (ContactPermissionUtils.isGranted()) {
-            ContentResolver contentResolver = mContext.getContentResolver();
+            ContentResolver contentResolver = context.getContentResolver();
             Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                     null, null, null, ContactsContract.Contacts.DISPLAY_NAME);
 
             if ((cursor != null ? cursor.getCount() : 0) > 0) {
                 while (cursor != null && cursor.moveToNext()) {
-                    String id = cursor.getString(
+                    int id = cursor.getInt(
                             cursor.getColumnIndex(ContactsContract.Contacts._ID));
                     String name = cursor.getString(cursor.getColumnIndex(
                             ContactsContract.Contacts.DISPLAY_NAME));
@@ -44,7 +44,7 @@ public class ContactSyncUtils {
                                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                                 null,
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                                new String[]{id}, null);
+                                new String[]{String.valueOf(id)}, null);
                         while (pCur.moveToNext()) {
                             phoneNo = pCur.getString(pCur.getColumnIndex(
                                     ContactsContract.CommonDataKinds.Phone.NUMBER));
@@ -52,7 +52,7 @@ public class ContactSyncUtils {
                         }
                         pCur.close();
                     }
-                    mContacts.add(new Contact(id, name, phoneNo));
+                    contacts.add(new Contact(id, name, phoneNo));
                 }
             }
             if (cursor != null) {
@@ -64,6 +64,6 @@ public class ContactSyncUtils {
     }
 
     public List<Contact> getContacts() {
-        return mContacts;
+        return contacts;
     }
 }

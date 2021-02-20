@@ -10,17 +10,17 @@ import java.util.List;
 
 public class ContactsListViewModel extends ViewModel {
 
-    private final ContactsRepository mRepository;
+    private final ContactsRepository repository;
 
     public ContactsListViewModel() {
-        mRepository = ContactsRepository.getInstance();
+        repository = ContactsRepository.getInstance();
     }
 
     public LiveData<List<Contact>> getContactsLiveData() {
-        return mRepository.getContactsLiveData();
+        return repository.getContactsLiveData();
     }
 
     public void insertContacts() {
-        mRepository.insertContacts();
+        repository.insertContacts();
     }
 }

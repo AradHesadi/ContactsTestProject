@@ -9,14 +9,14 @@ import com.example.contactstestproject.utils.ApplicationUtils;
 
 public class ContactsObserver {
 
-   ContactsRepository mRepository = ContactsRepository.getInstance();
+   ContactsRepository repository = ContactsRepository.getInstance();
 
 
-    public ContentObserver mContentObserver = new ContentObserver(null) {
+    public ContentObserver contentObserver = new ContentObserver(null) {
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            mRepository.insertContacts();
+            repository.insertContacts();
             Log.d("testt", "contentObserver");
         }
     };
@@ -25,6 +25,6 @@ public class ContactsObserver {
         ApplicationUtils.getContext().getContentResolver().registerContentObserver(
                 ContactsContract.Contacts.CONTENT_URI,
                 true,
-                mContentObserver);
+                contentObserver);
     }
 }

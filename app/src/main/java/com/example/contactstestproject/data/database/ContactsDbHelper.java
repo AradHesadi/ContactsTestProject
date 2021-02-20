@@ -15,7 +15,7 @@ public class ContactsDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + ContactsDbSchema.ContactsTable.NAME + "("
-                + ContactsDbSchema.ContactsTable.COLS.ID + " text primary key,"
+                + ContactsDbSchema.ContactsTable.COLS.ID + " int primary key,"
                 + ContactsDbSchema.ContactsTable.COLS.NAME + " text,"
                 + ContactsDbSchema.ContactsTable.COLS.PHONE_NUMBER + " text"
                 + ")");

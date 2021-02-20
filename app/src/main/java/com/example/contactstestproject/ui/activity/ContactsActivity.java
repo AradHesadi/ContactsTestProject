@@ -36,24 +36,24 @@ public class ContactsActivity extends AppCompatActivity {
 
     private static final int MENU_ITEM_BACK = 1;
 
-    private ContactsListView mContactsListView;
-    private ContactsListAdapter mContactsListAdapter;
-    private ContactDetailView mContactDetailView;
-    private Contact mCurrentContact;
+    private ContactsListView contactsListView;
+    private ContactsListAdapter contactsListAdapter;
+    private ContactDetailView contactDetailView;
+    private Contact currentContact;
     private boolean inDetailView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContactsListView = new ContactsListView(this);
-        mContactDetailView = new ContactDetailView(this);
+        contactsListView = new ContactsListView(this);
+        contactDetailView = new ContactDetailView(this);
         ContactsListViewModel mContactsListViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory
                 .getInstance(this.getApplication()))
                 .get(ContactsListViewModel.class);
-        setContentView(mContactsListView);
-        addContentView(mContactDetailView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        mContactDetailView.setVisibility(View.GONE);
-        mContactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(this));
+        setContentView(contactsListView);
+        addContentView(contactDetailView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        contactDetailView.setVisibility(View.GONE);
+        contactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(this));
         mContactsListViewModel.insertContacts();
         mContactsListViewModel.getContactsLiveData().observe(this, new Observer<List<Contact>>() {
             @Override
@@ -64,7 +64,7 @@ public class ContactsActivity extends AppCompatActivity {
                     setAdapter(contacts);
             }
         });
-        mContactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(getContext()));
+        contactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     @Override
@@ -93,51 +93,51 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
     private void setAdapter(List<Contact> contacts) {
-        if (mContactsListAdapter == null) {
-            mContactsListAdapter = new ContactsListAdapter(getContext(), contacts);
-            mContactsListView.getRecyclerView().setAdapter(mContactsListAdapter);
+        if (contactsListAdapter == null) {
+            contactsListAdapter = new ContactsListAdapter(getContext(), contacts);
+            contactsListView.getRecyclerView().setAdapter(contactsListAdapter);
         } else {
-            mContactsListAdapter.updateAdapter(contacts);
+            contactsListAdapter.updateAdapter(contacts);
         }
     }
 
     private void changeDetail(List<Contact> contacts) {
         for (int i = 0; i < contacts.size(); i++) {
-            if (contacts.get(i).getId().equals(mCurrentContact.getId())) {
-                mCurrentContact.setName(contacts.get(i).getName());
-                mCurrentContact.setPhoneNumber(contacts.get(i).getPhoneNumber());
+            if (contacts.get(i).getId()==(currentContact.getId())) {
+                currentContact.setName(contacts.get(i).getName());
+                currentContact.setPhoneNumber(contacts.get(i).getPhoneNumber());
                 initDetailView();
             }
         }
     }
 
     private void initDetailView() {
-        mContactDetailView.setNameTextView(mCurrentContact.getName());
-        mContactDetailView.setPhoneTextView(mCurrentContact.getPhoneNumber());
+        contactDetailView.setNameTextView(currentContact.getName());
+        contactDetailView.setPhoneTextView(currentContact.getPhoneNumber());
     }
 
     private void slideDetailView(boolean inDetailView) {
         Transition transition = new Slide(Gravity.END);
         transition.setDuration(500);
-        transition.addTarget(mContactDetailView);
-        TransitionManager.beginDelayedTransition(mContactsListView, transition);
-        mContactDetailView.setVisibility(inDetailView ? View.VISIBLE : View.GONE);
+        transition.addTarget(contactDetailView);
+        TransitionManager.beginDelayedTransition(contactsListView, transition);
+        contactDetailView.setVisibility(inDetailView ? View.VISIBLE : View.GONE);
     }
 
     public class ContactsListAdapter extends
             RecyclerView.Adapter<ContactsListAdapter.ContactsListHolder> {
 
-        private List<Contact> mContacts;
-        private final Context mContext;
+        private List<Contact> contacts;
+        private final Context context;
 
         public ContactsListAdapter(Context context, List<Contact> contacts) {
-            mContext = context;
-            mContacts = contacts;
+            this.context = context;
+            this.contacts = contacts;
             Log.d("testt", "1 " + contacts.size());
         }
 
         public void updateAdapter(List<Contact> contacts) {
-            mContacts = contacts;
+            this.contacts = contacts;
             notifyDataSetChanged();
             Log.d("testt", "2 " + contacts.size());
         }
@@ -145,7 +145,7 @@ public class ContactsActivity extends AppCompatActivity {
         @NonNull
         @Override
         public ContactsListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ContactRowView mContactRowView = new ContactRowView(mContext);
+            ContactRowView mContactRowView = new ContactRowView(context);
             return new ContactsListHolder(mContactRowView);
         }
 
@@ -156,20 +156,20 @@ public class ContactsActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mContacts.size();
+            return contacts.size();
         }
 
         public class ContactsListHolder extends RecyclerView.ViewHolder {
-            private final ContactRowView mContactRowView;
-            private Contact mContact;
+            private final ContactRowView contactRowView;
+            private Contact contact;
 
             public ContactsListHolder(ContactRowView contactRowView) {
                 super(contactRowView);
-                mContactRowView = contactRowView;
-                mContactRowView.setOnClickListener(new View.OnClickListener() {
+                this.contactRowView = contactRowView;
+                this.contactRowView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mCurrentContact = mContact;
+                        currentContact = contact;
                         inDetailView = true;
                         initDetailView();
                         slideDetailView(inDetailView);
@@ -178,8 +178,8 @@ public class ContactsActivity extends AppCompatActivity {
             }
 
             public void bindProduct(int position) {
-                mContact = mContacts.get(position);
-                mContactRowView.setNameTextView(mContact.getName());
+                contact = contacts.get(position);
+                contactRowView.setNameTextView(contact.getName());
             }
         }
     }

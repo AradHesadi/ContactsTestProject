@@ -21,46 +21,43 @@ import java.util.List;
 
 public class ContactsRepository{
 
-    private static ContactsRepository sRepository;
-    private final SQLiteDatabase mDatabase;
-    private final ContactSyncUtils mContactSyncUtils;
-    MutableLiveData<List<Contact>> mContactsLiveData = new MutableLiveData<>();
+    private static ContactsRepository repository;
+    private final SQLiteDatabase database;
+    private final ContactSyncUtils contactSyncUtils;
+    MutableLiveData<List<Contact>> listMutableLiveData = new MutableLiveData<>();
 
     public static ContactsRepository getInstance() {
-        if (sRepository == null)
-            sRepository = new ContactsRepository();
-        return sRepository;
+        if (repository == null)
+            repository = new ContactsRepository();
+        return repository;
     }
 
     private ContactsRepository() {
         ContactsDbHelper contactsDbHelper = new ContactsDbHelper(ApplicationUtils.getContext());
-        mDatabase = contactsDbHelper.getWritableDatabase();
-        mContactSyncUtils = new ContactSyncUtils(ApplicationUtils.getContext());
+        database = contactsDbHelper.getWritableDatabase();
+        contactSyncUtils = new ContactSyncUtils(ApplicationUtils.getContext());
     }
 
     public LiveData<List<Contact>> getContactsLiveData() {
         Log.d("testt", "getContactsLiveData: ");
-        return mContactsLiveData;
+        return listMutableLiveData;
     }
 
     public void fetchContactsLiveData() {
         List<Contact> contacts = new ArrayList<>();
-        ContactsCursorWrapper cursor = queryContacts();
-        try {
+        try (ContactsCursorWrapper cursor = queryContacts()) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 contacts.add(cursor.getContact());
                 cursor.moveToNext();
             }
-        } finally {
-            cursor.close();
         }
         Log.d("testt", "repository liveData : "+contacts.size());
-        mContactsLiveData.postValue(contacts);
+        listMutableLiveData.postValue(contacts);
     }
 
     public void clear() {
-        mDatabase.delete(ContactsDbSchema.ContactsTable.NAME, null, null);
+        database.delete(ContactsDbSchema.ContactsTable.NAME, null, null);
     }
 
     public void insertContacts() {
@@ -68,12 +65,12 @@ public class ContactsRepository{
             @Override
             public void run() {
                 clear();
-                mContactSyncUtils.sync();
-                int size = mContactSyncUtils.getContacts().size();
+                contactSyncUtils.sync();
+                int size = contactSyncUtils.getContacts().size();
                 for (int i = 0; i < size; i++)
-                    mDatabase.insert(ContactsDbSchema.ContactsTable.NAME,
+                    database.insert(ContactsDbSchema.ContactsTable.NAME,
                             null,
-                            getContactsContentValue(mContactSyncUtils.getContacts().get(i)));
+                            getContactsContentValue(contactSyncUtils.getContacts().get(i)));
                 Log.d("testt", "repository : "+ size);
                 fetchContactsLiveData();
             }
@@ -81,7 +78,7 @@ public class ContactsRepository{
     }
 
     private ContactsCursorWrapper queryContacts() {
-        Cursor cursor = mDatabase.query(ContactsDbSchema.ContactsTable.NAME,
+        Cursor cursor = database.query(ContactsDbSchema.ContactsTable.NAME,
                 null,
                 null,
                 null,
