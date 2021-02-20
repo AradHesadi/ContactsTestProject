@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.contactstestproject.R;
+import com.example.contactstestproject.ui.Theme;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -55,6 +56,6 @@ public class ContactRowView extends FrameLayout {
 
     private void initPaints(){
         backgroundPaint = new Paint();
-        backgroundPaint.setColor(Color.parseColor("#4EE3DD"));
+        backgroundPaint.setColor(Theme.getColor("contactRowViewBackground"));
     }
 }

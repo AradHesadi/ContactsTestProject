@@ -19,11 +19,11 @@ import com.example.contactstestproject.utils.contacts.ContactSyncUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactsRepository implements IContactsRepository {
+public class ContactsRepository{
 
     private static ContactsRepository sRepository;
     private final SQLiteDatabase mDatabase;
-    private ContactSyncUtils mContactSyncUtils;
+    private final ContactSyncUtils mContactSyncUtils;
     MutableLiveData<List<Contact>> mContactsLiveData = new MutableLiveData<>();
 
     public static ContactsRepository getInstance() {
@@ -38,7 +38,6 @@ public class ContactsRepository implements IContactsRepository {
         mContactSyncUtils = new ContactSyncUtils(ApplicationUtils.getContext());
     }
 
-    @Override
     public LiveData<List<Contact>> getContactsLiveData() {
         Log.d("testt", "getContactsLiveData: ");
         return mContactsLiveData;
@@ -46,7 +45,7 @@ public class ContactsRepository implements IContactsRepository {
 
     public void fetchContactsLiveData() {
         List<Contact> contacts = new ArrayList<>();
-        ContactsCursorWrapper cursor = queryContacts(null, null);
+        ContactsCursorWrapper cursor = queryContacts();
         try {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
@@ -60,33 +59,32 @@ public class ContactsRepository implements IContactsRepository {
         mContactsLiveData.postValue(contacts);
     }
 
-    @Override
     public void clear() {
         mDatabase.delete(ContactsDbSchema.ContactsTable.NAME, null, null);
     }
 
-    @Override
     public void insertContacts() {
         ThreadUtils.dataBaseWriteExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 clear();
                 mContactSyncUtils.sync();
-                for (int i = 0; i < mContactSyncUtils.getContacts().size(); i++)
+                int size = mContactSyncUtils.getContacts().size();
+                for (int i = 0; i < size; i++)
                     mDatabase.insert(ContactsDbSchema.ContactsTable.NAME,
                             null,
                             getContactsContentValue(mContactSyncUtils.getContacts().get(i)));
-                Log.d("testt", "repository : "+mContactSyncUtils.getContacts().size());
+                Log.d("testt", "repository : "+ size);
                 fetchContactsLiveData();
             }
         });
     }
 
-    private ContactsCursorWrapper queryContacts(String selection, String[] selectionArgs) {
+    private ContactsCursorWrapper queryContacts() {
         Cursor cursor = mDatabase.query(ContactsDbSchema.ContactsTable.NAME,
                 null,
-                selection,
-                selectionArgs,
+                null,
+                null,
                 null,
                 null,
                 null);

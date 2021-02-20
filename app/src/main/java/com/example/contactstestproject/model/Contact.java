@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 public class Contact implements Serializable {
 
-    private String mId;
+    private final String mId;
 
     private String mName;
 
@@ -15,10 +15,6 @@ public class Contact implements Serializable {
 
     public String getId() {
         return mId;
-    }
-
-    public void setId(String id) {
-        this.mName = mId;
     }
 
     public String getName() {

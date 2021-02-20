@@ -7,6 +7,8 @@ import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -19,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.contactstestproject.R;
 import com.example.contactstestproject.model.Contact;
 import com.example.contactstestproject.ui.comp.ContactDetailView;
 import com.example.contactstestproject.ui.comp.ContactRowView;
@@ -30,6 +33,8 @@ import java.util.List;
 import static com.example.contactstestproject.utils.ApplicationUtils.getContext;
 
 public class ContactsActivity extends AppCompatActivity {
+
+    private static final int MENU_ITEM_BACK = 1;
 
     private ContactsListView mContactsListView;
     private ContactsListAdapter mContactsListAdapter;
@@ -53,7 +58,10 @@ public class ContactsActivity extends AppCompatActivity {
         mContactsListViewModel.getContactsLiveData().observe(this, new Observer<List<Contact>>() {
             @Override
             public void onChanged(List<Contact> contacts) {
-                setAdapter(contacts);
+                if (inDetailView)
+                    changeDetail(contacts);
+                else
+                    setAdapter(contacts);
             }
         });
         mContactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(getContext()));
@@ -69,6 +77,21 @@ public class ContactsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(Menu.NONE, MENU_ITEM_BACK, Menu.NONE, getString(R.string.back));
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == MENU_ITEM_BACK) {
+            onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
     private void setAdapter(List<Contact> contacts) {
         if (mContactsListAdapter == null) {
             mContactsListAdapter = new ContactsListAdapter(getContext(), contacts);
@@ -76,6 +99,21 @@ public class ContactsActivity extends AppCompatActivity {
         } else {
             mContactsListAdapter.updateAdapter(contacts);
         }
+    }
+
+    private void changeDetail(List<Contact> contacts) {
+        for (int i = 0; i < contacts.size(); i++) {
+            if (contacts.get(i).getId().equals(mCurrentContact.getId())) {
+                mCurrentContact.setName(contacts.get(i).getName());
+                mCurrentContact.setPhoneNumber(contacts.get(i).getPhoneNumber());
+                initDetailView();
+            }
+        }
+    }
+
+    private void initDetailView() {
+        mContactDetailView.setNameTextView(mCurrentContact.getName());
+        mContactDetailView.setPhoneTextView(mCurrentContact.getPhoneNumber());
     }
 
     private void slideDetailView(boolean inDetailView) {
@@ -133,11 +171,8 @@ public class ContactsActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         mCurrentContact = mContact;
                         inDetailView = true;
-                        mContactDetailView.setNameTextView(mCurrentContact.getName());
-                        mContactDetailView.setPhoneTextView(mCurrentContact.getPhoneNumber());
-
+                        initDetailView();
                         slideDetailView(inDetailView);
-
                     }
                 });
             }

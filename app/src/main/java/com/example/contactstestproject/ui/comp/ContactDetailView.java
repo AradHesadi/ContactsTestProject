@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.contactstestproject.R;
+import com.example.contactstestproject.ui.Theme;
 
 public class ContactDetailView extends FrameLayout {
 
@@ -37,7 +38,6 @@ public class ContactDetailView extends FrameLayout {
         addViews(height, width);
         initPaints();
         setWillNotDraw(false);
-
         Log.d(TAG, "constructor: " + height + " " + width);
     }
 
@@ -47,7 +47,7 @@ public class ContactDetailView extends FrameLayout {
         int width = getMeasuredWidth();
         Log.d(TAG, "onDraw: " + height + " " + width);
         canvas.drawPaint(backgroundPaint);
-        canvas.drawRect(0, 0, width, height / 3, topPaint);
+        canvas.drawRect(0, 0, width, height / 3f, topPaint);
     }
 
     public void setNameTextView(CharSequence text) {
@@ -86,8 +86,8 @@ public class ContactDetailView extends FrameLayout {
     private void initPaints() {
         topPaint = new Paint();
         topPaint.setShadowLayer(10f, 0, 4.0f, Color.BLUE);
-        topPaint.setColor(Color.parseColor("#6ec6ff"));
+        topPaint.setColor(Theme.getColor("contactDetailViewTopPaint"));
         backgroundPaint = new Paint();
-        backgroundPaint.setColor(Color.parseColor("#c3fdff"));
+        backgroundPaint.setColor(Theme.getColor("contactDetailViewBackground"));
     }
 }
