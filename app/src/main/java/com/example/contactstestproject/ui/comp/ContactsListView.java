@@ -13,6 +13,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class ContactsListView extends FrameLayout {
 
+    public static final String CONTACT_LIST_VIEW_BACKGROUND_PAINT = "contactListViewBackgroundPaint";
     private final RecyclerView recyclerView;
 
     public ContactsListView(@NonNull Context context) {
@@ -20,7 +21,7 @@ public class ContactsListView extends FrameLayout {
         recyclerView = new RecyclerView(context);
         ViewGroup.LayoutParams layoutParams = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
         this.setLayoutParams(layoutParams);
-        this.setBackgroundColor(Theme.getColor("contactListViewBackgroundPaint"));
+        this.setBackgroundColor(Theme.getColor(CONTACT_LIST_VIEW_BACKGROUND_PAINT));
         addView(recyclerView, layoutParams);
     }
 

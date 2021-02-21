@@ -20,13 +20,18 @@ import java.util.List;
 
 public class ContactsRepository {
 
-    private static ContactsRepository repository;
+    private static volatile ContactsRepository repository;
     private final SQLiteDatabase database;
     MutableLiveData<List<Contact>> listMutableLiveData = new MutableLiveData<>();
 
     public static ContactsRepository getInstance() {
-        if (repository == null)
-            repository = new ContactsRepository();
+        if (repository == null) {
+            synchronized (ContactsRepository.class) {
+                if (repository == null) {
+                    repository = new ContactsRepository();
+                }
+            }
+        }
         return repository;
     }
 

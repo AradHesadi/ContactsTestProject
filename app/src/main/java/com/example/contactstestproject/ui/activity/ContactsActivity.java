@@ -69,7 +69,7 @@ public class ContactsActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (inDetailView) {
             inDetailView = false;
-            slideDetailView(inDetailView);
+            slideDetailView(false);
         } else {
             finish();
         }
@@ -101,7 +101,7 @@ public class ContactsActivity extends AppCompatActivity {
 
     private void changeDetail(List<Contact> contacts) {
         for (int i = 0; i < contacts.size(); i++) {
-            if (contacts.get(i).getId()==(currentContact.getId())) {
+            if (contacts.get(i).getId() == (currentContact.getId())) {
                 currentContact.setName(contacts.get(i).getName());
                 currentContact.setPhoneNumber(contacts.get(i).getPhoneNumber());
                 initDetailView();
@@ -161,16 +161,18 @@ public class ContactsActivity extends AppCompatActivity {
             private final ContactRowView contactRowView;
             private Contact contact;
 
-            public ContactsListHolder(ContactRowView contactRowView) {
+            public ContactsListHolder(final ContactRowView contactRowView) {
                 super(contactRowView);
                 this.contactRowView = contactRowView;
                 this.contactRowView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        currentContact = contact;
-                        inDetailView = true;
-                        initDetailView();
-                        slideDetailView(inDetailView);
+                        if (!inDetailView) {
+                            currentContact = contact;
+                            inDetailView = true;
+                            initDetailView();
+                            slideDetailView(inDetailView);
+                        }
                     }
                 });
             }

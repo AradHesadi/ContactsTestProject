@@ -20,6 +20,8 @@ import com.example.contactstestproject.ui.Theme;
 public class ContactDetailView extends FrameLayout {
 
     private static final String TAG = "MSG";
+    public static final String CONTACT_DETAIL_VIEW_TOP_PAINT = "contactDetailViewTopPaint";
+    public static final String CONTACT_DETAIL_VIEW_BACKGROUND = "contactDetailViewBackground";
     private TextView nameTextView;
     private TextView phoneTextView;
     private ImageView contactImageView;
@@ -86,8 +88,8 @@ public class ContactDetailView extends FrameLayout {
     private void initPaints() {
         topPaint = new Paint();
         topPaint.setShadowLayer(10f, 0, 4.0f, Color.BLUE);
-        topPaint.setColor(Theme.getColor("contactDetailViewTopPaint"));
+        topPaint.setColor(Theme.getColor(CONTACT_DETAIL_VIEW_TOP_PAINT));
         backgroundPaint = new Paint();
-        backgroundPaint.setColor(Theme.getColor("contactDetailViewBackground"));
+        backgroundPaint.setColor(Theme.getColor(CONTACT_DETAIL_VIEW_BACKGROUND));
     }
 }

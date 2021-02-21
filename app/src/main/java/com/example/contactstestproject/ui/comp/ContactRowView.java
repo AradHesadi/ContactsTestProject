@@ -20,6 +20,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class ContactRowView extends FrameLayout {
 
+    public static final String CONTACT_ROW_VIEW_BACKGROUND = "contactRowViewBackground";
     private TextView nameTextView;
     private Paint backgroundPaint;
 
@@ -56,6 +57,6 @@ public class ContactRowView extends FrameLayout {
 
     private void initPaints(){
         backgroundPaint = new Paint();
-        backgroundPaint.setColor(Theme.getColor("contactRowViewBackground"));
+        backgroundPaint.setColor(Theme.getColor(CONTACT_ROW_VIEW_BACKGROUND));
     }
 }
