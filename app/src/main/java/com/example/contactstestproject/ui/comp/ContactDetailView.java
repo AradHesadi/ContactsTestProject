@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 
 import com.example.contactstestproject.R;
 import com.example.contactstestproject.ui.Theme;
+import com.example.contactstestproject.utils.LayoutHelper;
 
 public class ContactDetailView extends FrameLayout {
 
@@ -75,19 +76,17 @@ public class ContactDetailView extends FrameLayout {
     }
 
     private void addViews(int height, int width) {
-        LayoutParams imageLayoutParams = new LayoutParams(height / 4, height / 4, Gravity.CENTER | Gravity.TOP);
-        imageLayoutParams.setMargins(0, 60, 0, 0);
-        LayoutParams nameLayoutParams = new LayoutParams(width, 100, Gravity.CENTER);
-        LayoutParams phoneLayoutParams = new LayoutParams(width, 100, Gravity.CENTER);
-        phoneLayoutParams.setMargins(0, 160, 0, 0);
-        addView(nameTextView, nameLayoutParams);
-        addView(contactImageView, imageLayoutParams);
-        addView(phoneTextView, phoneLayoutParams);
+        addView(nameTextView, LayoutHelper.createFrame(width, 100
+                , Gravity.CENTER));
+        addView(contactImageView, LayoutHelper.createFrame(height / 4, height / 4
+                , Gravity.CENTER | Gravity.TOP, 0, 60, 0, 0));
+        addView(phoneTextView, LayoutHelper.createFrame(width, 100
+                , Gravity.CENTER, 0, 160, 0, 0));
     }
 
     private void initPaints() {
         topPaint = new Paint();
-        topPaint.setShadowLayer(10f, 0, 4.0f, Color.BLUE);
+        topPaint.setShadowLayer(LayoutHelper.dp(10), 0, LayoutHelper.dp(4), Color.BLUE);
         topPaint.setColor(Theme.getColor(CONTACT_DETAIL_VIEW_TOP_PAINT));
         backgroundPaint = new Paint();
         backgroundPaint.setColor(Theme.getColor(CONTACT_DETAIL_VIEW_BACKGROUND));

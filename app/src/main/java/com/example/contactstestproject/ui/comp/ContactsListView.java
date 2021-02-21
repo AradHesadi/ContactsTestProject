@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contactstestproject.ui.Theme;
+import com.example.contactstestproject.utils.LayoutHelper;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
@@ -19,10 +20,8 @@ public class ContactsListView extends FrameLayout {
     public ContactsListView(@NonNull Context context) {
         super(context);
         recyclerView = new RecyclerView(context);
-        ViewGroup.LayoutParams layoutParams = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
-        this.setLayoutParams(layoutParams);
         this.setBackgroundColor(Theme.getColor(CONTACT_LIST_VIEW_BACKGROUND_PAINT));
-        addView(recyclerView, layoutParams);
+        addView(recyclerView, LayoutHelper.createFrame(MATCH_PARENT, MATCH_PARENT));
     }
 
     public RecyclerView getRecyclerView() {

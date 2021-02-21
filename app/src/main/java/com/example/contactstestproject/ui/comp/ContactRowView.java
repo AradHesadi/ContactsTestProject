@@ -2,18 +2,16 @@ package com.example.contactstestproject.ui.comp;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.Gravity;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.example.contactstestproject.R;
 import com.example.contactstestproject.ui.Theme;
+import com.example.contactstestproject.utils.LayoutHelper;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -36,7 +34,11 @@ public class ContactRowView extends FrameLayout {
         super.onDraw(canvas);
         int height = getMeasuredHeight();
         int width = getMeasuredWidth();
-        canvas.drawRoundRect(20, 16, width-20, height-10, 80f, 50f, backgroundPaint);
+        canvas.drawRoundRect(LayoutHelper.dp(20), LayoutHelper.dp(16)
+                , width - LayoutHelper.dp(20)
+                , height - LayoutHelper.dp(10)
+                , LayoutHelper.dp(80)
+                , LayoutHelper.dp(50), backgroundPaint);
     }
 
     public void setNameTextView(CharSequence text) {
@@ -44,18 +46,16 @@ public class ContactRowView extends FrameLayout {
     }
 
     private void initViews(@NonNull Context context) {
-        ViewGroup.LayoutParams baseLayoutParams = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-        this.setLayoutParams(baseLayoutParams);
+        this.setLayoutParams(LayoutHelper.createFrame(MATCH_PARENT, 160));
         nameTextView = new TextView(context);
         nameTextView.setText(R.string.name);
         nameTextView.setTextSize(26);
         nameTextView.setTextAlignment(TEXT_ALIGNMENT_CENTER);
-        FrameLayout.LayoutParams nameLayoutParams = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.CENTER);
-        nameLayoutParams.setMargins(0,32,0,32);
-        addView(nameTextView,nameLayoutParams);
+        addView(nameTextView, LayoutHelper.createFrame(WRAP_CONTENT, WRAP_CONTENT
+                , Gravity.CENTER, 0, 0, 0, 0));
     }
 
-    private void initPaints(){
+    private void initPaints() {
         backgroundPaint = new Paint();
         backgroundPaint.setColor(Theme.getColor(CONTACT_ROW_VIEW_BACKGROUND));
     }

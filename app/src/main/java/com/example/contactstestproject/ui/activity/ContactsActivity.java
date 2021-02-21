@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,13 +25,19 @@ import com.example.contactstestproject.model.Contact;
 import com.example.contactstestproject.ui.comp.ContactDetailView;
 import com.example.contactstestproject.ui.comp.ContactRowView;
 import com.example.contactstestproject.ui.comp.ContactsListView;
+import com.example.contactstestproject.utils.LayoutHelper;
 import com.example.contactstestproject.viewmodel.ContactsListViewModel;
 
 import java.util.List;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 public class ContactsActivity extends AppCompatActivity {
 
+    public static final String BUNDLE_CONTACT = "BUNDLE_CONTACT";
+    public static final String BUNDLE_IN_DETAIL_VIEW = "BUNDLE_IN_DETAIL_VIEW";
     private static final int MENU_ITEM_BACK = 1;
+    public static final int SLIDE_DURATION = 500;
 
     private ContactsListView contactsListView;
     private ContactsListAdapter contactsListAdapter;
@@ -49,7 +54,7 @@ public class ContactsActivity extends AppCompatActivity {
                 .getInstance(this.getApplication()))
                 .get(ContactsListViewModel.class);
         setContentView(contactsListView);
-        addContentView(contactDetailView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        addContentView(contactDetailView, LayoutHelper.createFrame(MATCH_PARENT,MATCH_PARENT));
         contactDetailView.setVisibility(View.GONE);
         contactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(this));
         mContactsListViewModel.insertContacts();
@@ -63,6 +68,12 @@ public class ContactsActivity extends AppCompatActivity {
             }
         });
         contactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(this));
+        if (savedInstanceState!=null){
+            inDetailView = savedInstanceState.getBoolean(BUNDLE_IN_DETAIL_VIEW);
+            currentContact = (Contact) savedInstanceState.getSerializable(BUNDLE_CONTACT);
+            contactDetailView.setVisibility(View.VISIBLE);
+            initDetailView();
+        }
     }
 
     @Override
@@ -88,6 +99,13 @@ public class ContactsActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(BUNDLE_CONTACT,currentContact);
+        outState.putBoolean(BUNDLE_IN_DETAIL_VIEW,inDetailView);
     }
 
     private void setAdapter(List<Contact> contacts) {
@@ -116,7 +134,7 @@ public class ContactsActivity extends AppCompatActivity {
 
     private void slideDetailView(boolean inDetailView) {
         Transition transition = new Slide(Gravity.END);
-        transition.setDuration(500);
+        transition.setDuration(SLIDE_DURATION);
         transition.addTarget(contactDetailView);
         TransitionManager.beginDelayedTransition(contactsListView, transition);
         contactDetailView.setVisibility(inDetailView ? View.VISIBLE : View.GONE);
