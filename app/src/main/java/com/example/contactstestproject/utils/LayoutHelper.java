@@ -2,8 +2,6 @@ package com.example.contactstestproject.utils;
 
 import android.widget.FrameLayout;
 
-import static android.view.View.MeasureSpec.getSize;
-
 public class LayoutHelper {
 
     public static Float density = 1f;

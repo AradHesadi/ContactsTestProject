@@ -7,6 +7,8 @@ import android.provider.ContactsContract;
 
 import com.example.contactstestproject.data.repository.ContactsRepository;
 
+import ir.tapsell.sdk.Tapsell;
+
 public class MyApp extends Application {
 
     private static Context context;
@@ -14,6 +16,7 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Tapsell.initialize(this, "gdofhmonadppeefnfqlgtdolhbrnnefmafcptggsjtnfkceekognidjatqsoqraitjeajq");
         context = getApplicationContext();
         MyApp.getContext().getContentResolver().registerContentObserver(
                 ContactsContract.Contacts.CONTENT_URI,

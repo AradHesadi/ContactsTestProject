@@ -37,6 +37,7 @@ public class ContactDetailView extends FrameLayout {
                 .getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
+
         initViews(context);
         addViews(height, width);
         initPaints();

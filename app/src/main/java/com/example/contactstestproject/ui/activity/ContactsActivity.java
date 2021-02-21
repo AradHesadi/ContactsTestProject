@@ -16,21 +16,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contactstestproject.R;
+import com.example.contactstestproject.data.repository.ContactsRepository;
 import com.example.contactstestproject.model.Contact;
 import com.example.contactstestproject.ui.comp.ContactDetailView;
 import com.example.contactstestproject.ui.comp.ContactRowView;
 import com.example.contactstestproject.ui.comp.ContactsListView;
 import com.example.contactstestproject.utils.LayoutHelper;
-import com.example.contactstestproject.viewmodel.ContactsListViewModel;
 
 import java.util.List;
 
+import ir.tapsell.sdk.Tapsell;
+import ir.tapsell.sdk.TapsellAdRequestListener;
+import ir.tapsell.sdk.TapsellAdRequestOptions;
+import ir.tapsell.sdk.bannerads.TapsellBannerType;
+import ir.tapsell.sdk.bannerads.TapsellBannerView;
+import ir.tapsell.sdk.bannerads.TapsellBannerViewEventListener;
+
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static ir.tapsell.sdk.TapsellAdActivity.ZONE_ID;
 
 public class ContactsActivity extends AppCompatActivity {
 
@@ -38,8 +45,10 @@ public class ContactsActivity extends AppCompatActivity {
     public static final String BUNDLE_IN_DETAIL_VIEW = "BUNDLE_IN_DETAIL_VIEW";
     private static final int MENU_ITEM_BACK = 1;
     public static final int SLIDE_DURATION = 500;
+    public static final String ZONE_ID = "5dcfc416bbfcde00017e027d";
 
     private ContactsListView contactsListView;
+    private TapsellBannerView tapsellBannerView;
     private ContactsListAdapter contactsListAdapter;
     private ContactDetailView contactDetailView;
     private Contact currentContact;
@@ -48,17 +57,14 @@ public class ContactsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ContactsRepository repository = ContactsRepository.getInstance();
         contactsListView = new ContactsListView(this);
         contactDetailView = new ContactDetailView(this);
-        ContactsListViewModel mContactsListViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory
-                .getInstance(this.getApplication()))
-                .get(ContactsListViewModel.class);
         setContentView(contactsListView);
-        addContentView(contactDetailView, LayoutHelper.createFrame(MATCH_PARENT,MATCH_PARENT));
+        addContentView(contactDetailView, LayoutHelper.createFrame(MATCH_PARENT, MATCH_PARENT));
         contactDetailView.setVisibility(View.GONE);
         contactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(this));
-        mContactsListViewModel.insertContacts();
-        mContactsListViewModel.getContactsLiveData().observe(this, new Observer<List<Contact>>() {
+        repository.getContactsLiveData().observe(this, new Observer<List<Contact>>() {
             @Override
             public void onChanged(List<Contact> contacts) {
                 if (inDetailView)
@@ -68,12 +74,61 @@ public class ContactsActivity extends AppCompatActivity {
             }
         });
         contactsListView.getRecyclerView().setLayoutManager(new LinearLayoutManager(this));
-        if (savedInstanceState!=null){
+        if (savedInstanceState != null) {
             inDetailView = savedInstanceState.getBoolean(BUNDLE_IN_DETAIL_VIEW);
             currentContact = (Contact) savedInstanceState.getSerializable(BUNDLE_CONTACT);
-            contactDetailView.setVisibility(View.VISIBLE);
-            initDetailView();
+            if (inDetailView) {
+                contactDetailView.setVisibility(View.VISIBLE);
+                initDetailView();
+            }
         }
+        repository.insertContacts();
+
+        Tapsell.requestAd(this,
+                ZONE_ID,
+                new TapsellAdRequestOptions(),
+                new TapsellAdRequestListener() {
+                    @Override
+                    public void onAdAvailable(String adId) {
+                        Log.d("ttttt",adId);
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        Log.d("ttttt",message);
+                    }
+                });
+
+        tapsellBannerView = new TapsellBannerView(this, TapsellBannerType.BANNER_250x250, ZONE_ID);
+        tapsellBannerView.loadAd(this,ZONE_ID,TapsellBannerType.BANNER_250x250);
+        setContentView(tapsellBannerView,LayoutHelper.createFrame(200,200,Gravity.CENTER));
+        tapsellBannerView.setEventListener(new TapsellBannerViewEventListener() {
+            @Override
+            public void onNoAdAvailable() {
+                Log.d("tttt","onNoAdAvailable");
+            }
+
+            @Override
+            public void onNoNetwork() {
+                Log.d("tttt","onNoNetwork");
+            }
+
+            @Override
+            public void onError(String s) {
+                Log.d("tttt",s);
+            }
+
+            @Override
+            public void onRequestFilled() {
+                Log.d("tttt","onRequestFilled");
+            }
+
+            @Override
+            public void onHideBannerView() {
+                Log.d("tttt","onHideBannerView");
+            }
+        });
+        tapsellBannerView.showBannerView();
     }
 
     @Override
@@ -104,8 +159,8 @@ public class ContactsActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(BUNDLE_CONTACT,currentContact);
-        outState.putBoolean(BUNDLE_IN_DETAIL_VIEW,inDetailView);
+        outState.putSerializable(BUNDLE_CONTACT, currentContact);
+        outState.putBoolean(BUNDLE_IN_DETAIL_VIEW, inDetailView);
     }
 
     private void setAdapter(List<Contact> contacts) {
